@@ -1,0 +1,52 @@
+# ============================================================
+# Gestor Facturas Pro v14  —  requirements.txt
+# Última actualización: 2025-V14
+# ============================================================
+
+# ── Interfaz gráfica ──────────────────────────────────────────
+PyQt5>=5.15.9
+PyQt5-Qt5>=5.15.2
+PyQt5-sip>=12.12.1
+
+# ── Procesado de PDF ─────────────────────────────────────────
+PyMuPDF>=1.23.0          # fitz — visor PDF + extracción texto
+pypdf>=3.0.0             # lectura/escritura PDF
+reportlab>=4.0.0         # generación PDF con marca de agua
+
+# ── OCR ───────────────────────────────────────────────────────
+pytesseract>=0.3.10      # wrapper Tesseract OCR
+Pillow>=10.0.0           # PIL — procesado de imágenes OCR
+pdf2image>=1.16.0        # conversión PDF → imagen para OCR
+opencv-python>=4.8.0     # preprocesado de imagen (opcional)
+numpy>=1.24.0            # preprocesado threshold adaptativo
+
+# ── Excel / Datos ─────────────────────────────────────────────
+openpyxl>=3.1.0          # lectura/escritura XLSX
+pandas>=2.0.0            # análisis de datos
+
+# ── Gráficos / Informes ────────────────────────────────────────
+matplotlib>=3.7.0        # gráficos en Tab Informes
+
+# ── Criptografía ─────────────────────────────────────────────
+cryptography>=41.0.0     # Ed25519 para firma de licencias + PBKDF2
+
+# ── IA: Google Gemini ─────────────────────────────────────────
+google-generativeai>=0.7.0   # Gemini API
+
+# ── IA: QR / utilidades ───────────────────────────────────────
+qrcode>=7.4.0
+
+# ── Correo electrónico ────────────────────────────────────────
+# imaplib, email, smtplib → incluidos en stdlib Python ≥ 3.6
+
+# ── Base de datos ─────────────────────────────────────────────
+# sqlite3 → incluido en stdlib Python
+
+# ── Configuración ─────────────────────────────────────────────
+PyYAML>=6.0.0
+
+# ── Windows (opcional) ────────────────────────────────────────
+pywin32>=306             ; sys_platform == "win32"
+
+# ── Utilidades ────────────────────────────────────────────────
+python-dateutil>=2.8.2

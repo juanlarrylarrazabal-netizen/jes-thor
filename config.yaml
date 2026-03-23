@@ -1,0 +1,134 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  GESTOR FACTURAS PRO  v8.0  —  Configuración central
+#  Edita este archivo para personalizar el comportamiento.
+#  NUNCA pongas contraseñas aquí. Usa .env para secrets.
+# ═══════════════════════════════════════════════════════════════════════════
+
+# ── Aplicación ──────────────────────────────────────────────────────────────
+app:
+  name: "Gestor Facturas Pro"
+  version: "8.0"
+  author: "JAMF"
+  log_level: "INFO"           # DEBUG | INFO | WARNING | ERROR
+
+# ── Base de datos ────────────────────────────────────────────────────────────
+database:
+  path: "./facturas.db"       # Ruta al SQLite. Usar ruta absoluta en producción.
+  wal_mode: true              # Write-Ahead Logging: mejor concurrencia
+  busy_timeout_ms: 30000
+
+# ── Almacenamiento de facturas ───────────────────────────────────────────────
+storage:
+  # Ruta raíz donde se guardan las facturas clasificadas.
+  # Cambia esto a tu ruta real (puede ser absoluta o relativa).
+  # Ejemplo Windows/Google Drive: "G:/Mi unidad/administracion/FACTURAS PROVEEDORES"
+  # Puedes sobreescribir con variable de entorno: GESTOR__STORAGE__ROOT=...
+  root: "./facturas_dest"
+  temp_dir: "./facturas_temp"
+  months:
+    1:  "01. ENERO"
+    2:  "02. FEBRERO"
+    3:  "03. MARZO"
+    4:  "04. ABRIL"
+    5:  "05. MAYO"
+    6:  "06. JUNIO"
+    7:  "07. JULIO"
+    8:  "08. AGOSTO"
+    9:  "09. SEPTIEMBRE"
+    10: "10. OCTUBRE"
+    11: "11. NOVIEMBRE"
+    12: "12. DICIEMBRE"
+  categories:
+    - "COMERCIAL Y POSTVENTA EXTERNAS"
+    - "COMUNES EXTERNOS"
+    - "GESTORIA"
+    - "SEAT"
+
+# ── Ingesta de correo (IMAP universal) ───────────────────────────────────────
+# Las credenciales (passwords) van en .env, no aquí.
+email:
+  default_host: "imap.gmail.com"
+  default_port: 993
+  use_ssl: true
+  folder: "INBOX"
+  # Límite de correos a descargar por sesión y cuenta
+  fetch_limit: 50
+  # Prefijos de asunto que indican una factura
+  subject_keywords:
+    - "factura"
+    - "invoice"
+    - "abono"
+    - "receipt"
+    - "albarán"
+  # Extensiones de adjuntos aceptados
+  accepted_extensions:
+    - ".pdf"
+    - ".png"
+    - ".jpg"
+    - ".jpeg"
+  # Reintentos con backoff exponencial
+  max_retries: 3
+  retry_backoff_s: 2.0
+  # Hosts IMAP predefinidos por dominio
+  known_hosts:
+    gmail.com:    { host: "imap.gmail.com",      port: 993, ssl: true }
+    googlemail.com: { host: "imap.gmail.com",    port: 993, ssl: true }
+    outlook.com:  { host: "imap-mail.outlook.com", port: 993, ssl: true }
+    hotmail.com:  { host: "imap-mail.outlook.com", port: 993, ssl: true }
+    yahoo.com:    { host: "imap.mail.yahoo.com", port: 993, ssl: true }
+    yahoo.es:     { host: "imap.mail.yahoo.com", port: 993, ssl: true }
+
+# ── OCR ──────────────────────────────────────────────────────────────────────
+ocr:
+  enabled: true
+  # Ruta Tesseract (null = auto-detectar desde PATH/registro Windows)
+  tesseract_path: null
+  # Idiomas a probar (en orden de preferencia)
+  languages:
+    - "spa"
+    - "eng"
+  # Preprocesado de imagen antes de OCR
+  preprocessing:
+    deskew: true         # Corregir inclinación
+    binarize: true       # Umbralización Otsu
+    denoise: false       # Reducción de ruido (lento)
+    min_dpi: 200         # Si DPI < min_dpi, hacer upscale
+    target_dpi: 300
+  # Solo lanzar OCR si el PDF tiene menos de N caracteres extraídos
+  ocr_fallback_threshold: 50
+  # Tiempo máximo de OCR por página (segundos)
+  timeout_per_page: 30
+
+# ── Reglas de clasificación ───────────────────────────────────────────────────
+rules:
+  # Precedencia: exact_match > cif > keyword > regex > fallback
+  fallback_category: "VARIOS"
+  fallback_vendor_code: "S/C"
+  # Similitud mínima para coincidencia difusa (0-1)
+  fuzzy_threshold: 0.75
+
+# ── Marca de agua (watermark) ────────────────────────────────────────────────
+watermark:
+  # Plantilla del texto estampado. Variables disponibles: {vendor_code}, {expense_account}
+  template: "Prv: {vendor_code} | Cta: {expense_account}"
+  # Posición en puntos PDF desde esquina inferior-izquierda
+  x: 50.0
+  y: 50.0
+  font_size: 10
+  # Opacidad: 1.0 = sólido, 0.3 = muy transparente
+  opacity: 0.85
+  # Color RGB (0.0–1.0): rojo por defecto
+  color: [1.0, 0.0, 0.0]
+  # Estampar solo primera página o todas
+  all_pages: false
+  # Clave en metadata PDF para detectar si ya está estampado (idempotencia)
+  stamp_marker: "__GESTPRO_STAMPED__"
+
+# ── Exportación Excel ─────────────────────────────────────────────────────────
+excel:
+  control_file: "./registro_facturas.xlsx"
+
+# ── Licencia ──────────────────────────────────────────────────────────────────
+license:
+  trial_days: 30
+  license_file: "./licencia.lic"
